@@ -35,3 +35,9 @@ fin_limier-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Local agent/tooling state.
+/.claude/
+/.codex/
+/.opencode/
+/.pi/
+/.vibe/
