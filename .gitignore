@@ -41,3 +41,7 @@ npm-debug.log
 /.opencode/
 /.pi/
 /.vibe/
+
+# env, direnv
+.env
+.envrc
