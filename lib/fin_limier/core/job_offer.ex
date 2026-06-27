@@ -6,6 +6,18 @@ defmodule FinLimier.Core.JobOffer do
   @remote_modes [:full, :hybrid, :onsite, :unknown]
   @seniorities [:junior, :mid, :senior, :unknown]
 
+  @type remote_mode :: :full | :hybrid | :onsite | :unknown
+  @type seniority :: :junior | :mid | :senior | :unknown
+  @type t :: %__MODULE__{
+          company: String.t() | nil,
+          title: String.t() | nil,
+          stack: [String.t()],
+          remote: remote_mode(),
+          seniority: seniority(),
+          location: String.t() | nil,
+          salary: String.t() | nil
+        }
+
   @primary_key false
   embedded_schema do
     field :company, :string
