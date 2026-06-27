@@ -7,6 +7,16 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+## Environment variables
+
+The following environment variables are required for the application to run:
+
+| Variable | Description |
+| --- | --- |
+| `FRANCE_TRAVAIL_CLIENT_ID` | Client ID for the France Travail API, used to authenticate when fetching job offers. |
+| `FRANCE_TRAVAIL_CLIENT_SECRET` | Client secret for the France Travail API, paired with the client ID to obtain access tokens. |
+| `OPENAI_API_KEY` | API key for OpenAI, used for AI-powered features. |
+
 Ready to run in production? Please [check our deployment guides](https://phoenix.hexdocs.pm/deployment.html).
 
 ## Learn more
