@@ -19,6 +19,10 @@ The following environment variables are required for the application to run:
 
 Ready to run in production? Please [check our deployment guides](https://phoenix.hexdocs.pm/deployment.html).
 
+## APIs
+
+* [France Travail API](https://francetravail.io/produits-partages/catalogue/offres-emploi?tabgroup-api=documentation)
+
 ## Learn more
 
 * Official website: https://www.phoenixframework.org/

@@ -31,6 +31,7 @@ defmodule FinLimier.Adapters.FranceTravail.Source do
              url,
              Keyword.merge(req_options,
                auth: {:bearer, access_token},
+               # TODO: `codeROME`, `departement` or `distance` && `commune`, `experience`
                params: %{motsCles: query, range: "0-#{limit - 1}"}
              )
            ) do
