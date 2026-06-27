@@ -3,33 +3,27 @@ defmodule FinLimier.Adapters.FranceTravail.AuthTest do
 
   alias FinLimier.Adapters.FranceTravail.Auth
 
-  defmodule SuccessClient do
-    def post(url, opts) do
-      send(self(), {:france_travail_token_request, url, opts})
-
-      {:ok, %Req.Response{status: 200, body: %{"access_token" => "token", "expires_in" => 1_499}}}
-    end
-  end
-
-  defmodule ErrorClient do
-    def post(_url, _opts),
-      do: {:ok, %Req.Response{status: 401, body: %{"error" => "invalid_client"}}}
-  end
-
   test "fetches an OAuth access token with client credentials" do
+    Req.Test.stub(Auth, fn conn ->
+      assert conn.request_path == "/connexion/oauth2/access_token"
+
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+      params = URI.decode_query(body)
+
+      assert params["grant_type"] == "client_credentials"
+      assert params["client_id"] == "client"
+      assert params["client_secret"] == "secret"
+      assert params["scope"] =~ "api_offresdemploiv2"
+
+      Req.Test.json(conn, %{"access_token" => "token", "expires_in" => 1_499})
+    end)
+
     assert {:ok, "token"} =
              Auth.fetch_token(
-               http_client: SuccessClient,
                client_id: "client",
-               client_secret: "secret"
+               client_secret: "secret",
+               req_options: [plug: {Req.Test, Auth}]
              )
-
-    assert_received {:france_travail_token_request, url, opts}
-    assert url =~ "/connexion/oauth2/access_token"
-    assert opts[:form][:grant_type] == "client_credentials"
-    assert opts[:form][:client_id] == "client"
-    assert opts[:form][:client_secret] == "secret"
-    assert opts[:form][:scope] =~ "api_offresdemploiv2"
   end
 
   test "fetches credentials from application runtime config" do
@@ -38,16 +32,32 @@ defmodule FinLimier.Adapters.FranceTravail.AuthTest do
       france_travail_client_secret: "runtime-secret"
     )
 
-    assert {:ok, "token"} = Auth.fetch_token(http_client: SuccessClient)
+    Req.Test.stub(Auth, fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+      params = URI.decode_query(body)
 
-    assert_received {:france_travail_token_request, _url, opts}
-    assert opts[:form][:client_id] == "runtime-client"
-    assert opts[:form][:client_secret] == "runtime-secret"
+      assert params["client_id"] == "runtime-client"
+      assert params["client_secret"] == "runtime-secret"
+
+      Req.Test.json(conn, %{"access_token" => "token", "expires_in" => 1_499})
+    end)
+
+    assert {:ok, "token"} = Auth.fetch_token(req_options: [plug: {Req.Test, Auth}])
   end
 
   test "contains token request failures" do
+    Req.Test.stub(Auth, fn conn ->
+      conn
+      |> Plug.Conn.put_status(401)
+      |> Req.Test.json(%{"error" => "invalid_client"})
+    end)
+
     assert {:error, {:france_travail_auth_failed, 401, %{"error" => "invalid_client"}}} =
-             Auth.fetch_token(http_client: ErrorClient, client_id: "client", client_secret: "bad")
+             Auth.fetch_token(
+               client_id: "client",
+               client_secret: "bad",
+               req_options: [plug: {Req.Test, Auth}, retry: false]
+             )
   end
 
   defp put_runtime_config(config) do

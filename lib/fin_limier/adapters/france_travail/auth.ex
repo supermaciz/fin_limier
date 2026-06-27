@@ -7,20 +7,23 @@ defmodule FinLimier.Adapters.FranceTravail.Auth do
   @scope "api_offresdemploiv2 o2dsoffre"
 
   def fetch_token(opts \\ []) do
-    http_client = Keyword.get(opts, :http_client, Req)
     url = Keyword.get(opts, :token_url, @token_url)
+    req_options = Keyword.get(opts, :req_options, [])
 
     with {:ok, client_id} <- fetch_credential(opts, :client_id, :france_travail_client_id),
          {:ok, client_secret} <-
            fetch_credential(opts, :client_secret, :france_travail_client_secret),
          {:ok, %{status: 200, body: %{"access_token" => access_token}}} <-
-           http_client.post(url,
-             form: %{
-               grant_type: "client_credentials",
-               client_id: client_id,
-               client_secret: client_secret,
-               scope: @scope
-             }
+           Req.post(
+             url,
+             Keyword.merge(req_options,
+               form: %{
+                 grant_type: "client_credentials",
+                 client_id: client_id,
+                 client_secret: client_secret,
+                 scope: @scope
+               }
+             )
            ) do
       {:ok, access_token}
     else

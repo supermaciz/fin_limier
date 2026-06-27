@@ -12,7 +12,6 @@ defmodule FinLimier.Adapters.FranceTravail.Source do
 
   @impl true
   def fetch_offers(opts \\ []) do
-    http_client = Keyword.get(opts, :http_client, Req)
     url = Keyword.get(opts, :url, @base_url)
 
     query =
@@ -24,12 +23,16 @@ defmodule FinLimier.Adapters.FranceTravail.Source do
       )
 
     limit = Keyword.get(opts, :limit, 50)
+    req_options = Keyword.get(opts, :req_options, [])
 
     with {:ok, access_token} <- fetch_access_token(opts),
          {:ok, %{status: 200, body: %{"resultats" => results}}} when is_list(results) <-
-           http_client.get(url,
-             auth: {:bearer, access_token},
-             params: %{motsCles: query, range: "0-#{limit - 1}"}
+           Req.get(
+             url,
+             Keyword.merge(req_options,
+               auth: {:bearer, access_token},
+               params: %{motsCles: query, range: "0-#{limit - 1}"}
+             )
            ) do
       {:ok, Enum.map(results, &to_raw_offer/1)}
     else
