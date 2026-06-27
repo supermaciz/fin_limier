@@ -15,10 +15,10 @@
 
 ## 3. Adapters
 
-- [ ] 3.1 Implement the France Travail source adapter using Req.
-- [ ] 3.2 Isolate France Travail authentication/token handling inside the adapter namespace.
-- [ ] 3.3 Implement the instructor_lite job offer extractor adapter.
-- [ ] 3.4 Add configuration for production adapters and test stubs.
+- [x] 3.1 Implement the France Travail source adapter using Req.
+- [x] 3.2 Isolate France Travail authentication/token handling inside the adapter namespace.
+- [x] 3.3 Implement the instructor_lite job offer extractor adapter.
+- [x] 3.4 Add configuration for production adapters and test stubs.
 
 ## 4. Use Cases
 

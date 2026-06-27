@@ -23,6 +23,11 @@ end
 config :fin_limier, FinLimierWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
+config :fin_limier, FinLimier.JobDiscovery,
+  france_travail_client_id: System.get_env("FRANCE_TRAVAIL_CLIENT_ID"),
+  france_travail_client_secret: System.get_env("FRANCE_TRAVAIL_CLIENT_SECRET"),
+  openai_api_key: System.get_env("OPENAI_API_KEY")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
