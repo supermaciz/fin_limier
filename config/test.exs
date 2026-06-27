@@ -23,6 +23,15 @@ config :fin_limier, FinLimierWeb.Endpoint,
 # In test we don't send emails
 config :fin_limier, FinLimier.Mailer, adapter: Swoosh.Adapters.Test
 
+# Oban runs in manual mode in tests
+config :fin_limier, Oban, testing: :manual
+
+# Stub job discovery adapters in tests
+config :fin_limier, FinLimier.JobDiscovery,
+  source: FinLimier.JobDiscovery.StubSource,
+  extractor: FinLimier.JobDiscovery.StubExtractor,
+  france_travail_query: "Elixir"
+
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 

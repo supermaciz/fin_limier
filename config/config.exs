@@ -11,6 +11,25 @@ config :fin_limier,
   ecto_repos: [FinLimier.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+# Configure Oban for background discovery
+config :fin_limier, Oban,
+  engine: Oban.Engines.Basic,
+  repo: FinLimier.Repo,
+  queues: [discovery: 5],
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
+    {Oban.Plugins.Cron,
+     crontab: [
+       {"0 * * * *", FinLimier.Workers.DiscoverJobsWorker}
+     ]}
+  ]
+
+# Job discovery defaults
+config :fin_limier, FinLimier.JobDiscovery,
+  source: FinLimier.Adapters.FranceTravail.Source,
+  extractor: FinLimier.Adapters.InstructorLiteExtractor,
+  france_travail_query: "Elixir"
+
 # Configure the endpoint
 config :fin_limier, FinLimierWeb.Endpoint,
   url: [host: "localhost"],

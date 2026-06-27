@@ -12,9 +12,7 @@ defmodule FinLimier.Application do
       FinLimier.Repo,
       {DNSCluster, query: Application.get_env(:fin_limier, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: FinLimier.PubSub},
-      # Start a worker by calling: FinLimier.Worker.start_link(arg)
-      # {FinLimier.Worker, arg},
-      # Start to serve requests, typically the last entry
+      {Oban, Application.fetch_env!(:fin_limier, Oban)},
       FinLimierWeb.Endpoint
     ]
 

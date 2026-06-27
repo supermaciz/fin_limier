@@ -1,17 +1,17 @@
 ## 1. Dependencies and Persistence
 
-- [ ] 1.1 Add Oban and instructor_lite dependencies to `mix.exs`.
-- [ ] 1.2 Configure Oban supervision, queues, and test mode.
-- [ ] 1.3 Generate and edit Oban database migrations.
-- [ ] 1.4 Generate and edit the persisted job offers migration with source metadata and a unique `{source, source_id}` constraint.
-- [ ] 1.5 Add the persisted job offer Ecto schema and changeset under the persistence layer.
+- [x] 1.1 Add Oban and instructor_lite dependencies to `mix.exs`.
+- [x] 1.2 Configure Oban supervision, queues, and test mode.
+- [x] 1.3 Generate and edit Oban database migrations.
+- [x] 1.4 Generate and edit the persisted job offers migration with source metadata and a unique `{source, source_id}` constraint.
+- [x] 1.5 Add the persisted job offer Ecto schema and changeset under the persistence layer.
 
 ## 2. Core and Ports
 
-- [ ] 2.1 Extend `FinLimier.Core.JobOffer` with extraction validation through changesets.
-- [ ] 2.2 Add `FinLimier.Ports.JobSource` behaviour for fetching raw offers.
-- [ ] 2.3 Add `FinLimier.Ports.JobOfferExtractor` behaviour for parsing raw offers into `FinLimier.Core.JobOffer`.
-- [ ] 2.4 Add deterministic test stub modules for the source and extractor ports.
+- [x] 2.1 Extend `FinLimier.Core.JobOffer` with extraction validation through changesets.
+- [x] 2.2 Add `FinLimier.Ports.JobSource` behaviour for fetching raw offers.
+- [x] 2.3 Add `FinLimier.Ports.JobOfferExtractor` behaviour for parsing raw offers into `FinLimier.Core.JobOffer`.
+- [x] 2.4 Add deterministic test stub modules for the source and extractor ports.
 
 ## 3. Adapters
 
