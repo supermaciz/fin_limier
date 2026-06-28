@@ -67,8 +67,10 @@ defmodule FinLimier.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:oban, "~> 2.23"},
+      {:oban_web, "~> 2.12"},
+      {:igniter, "~> 0.5", only: [:dev]},
       {:instructor_lite, "~> 1.2"},
-      {:boundary, "~> 0.10.4"}
+      {:boundary, "~> 0.10.4", runtime: false}
     ]
   end
 
