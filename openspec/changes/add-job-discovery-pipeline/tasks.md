@@ -29,9 +29,9 @@
 
 ## 5. Worker and Scheduling
 
-- [ ] 5.1 Add `FinLimier.Workers.DiscoverJobsWorker` that calls the discovery use case.
-- [ ] 5.2 Configure an Oban cron entry for scheduled discovery.
-- [ ] 5.3 Add worker tests covering successful runs and retryable failures.
+- [x] 5.1 Add `FinLimier.Workers.DiscoverJobsWorker` that calls the discovery use case.
+- [x] 5.2 Configure an Oban cron entry for scheduled discovery.
+- [x] 5.3 Add worker tests covering successful runs and retryable failures.
 
 ## 6. LiveView Review Screen
 
