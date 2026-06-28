@@ -3,8 +3,25 @@ defmodule FinLimier.Persistence.DiscoveredJobOffer do
 
   import Ecto.Changeset
 
+  alias FinLimier.Core.JobOffer
+
   @remote_modes [:full, :hybrid, :onsite, :unknown]
   @seniorities [:junior, :mid, :senior, :unknown]
+
+  @type t :: %__MODULE__{
+          source: String.t() | nil,
+          source_id: String.t() | nil,
+          source_url: String.t() | nil,
+          raw_payload: map(),
+          company: String.t() | nil,
+          title: String.t() | nil,
+          stack: [String.t()],
+          remote: JobOffer.remote_mode() | nil,
+          seniority: JobOffer.seniority() | nil,
+          location: String.t() | nil,
+          salary: String.t() | nil,
+          discovered_at: DateTime.t() | nil
+        }
 
   schema "discovered_job_offers" do
     field :source, :string

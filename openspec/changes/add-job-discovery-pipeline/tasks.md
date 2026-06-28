@@ -22,10 +22,10 @@
 
 ## 4. Use Cases
 
-- [ ] 4.1 Add a `DiscoverJobs` use case that fetches raw offers, parses them, deduplicates them, and persists new records.
-- [ ] 4.2 Add a `ListDiscoveredJobs` use case for the review UI.
-- [ ] 4.3 Ensure source and parsing failures are contained and inspectable without aborting the full discovery run.
-- [ ] 4.4 Add unit tests for use cases using stub ports.
+- [x] 4.1 Add a `DiscoverJobs` use case that fetches raw offers, parses them, deduplicates them, and persists new records.
+- [x] 4.2 Add a `ListDiscoveredJobs` use case for the review UI.
+- [x] 4.3 Ensure source and parsing failures are contained and inspectable without aborting the full discovery run.
+- [x] 4.4 Add unit tests for use cases using stub ports.
 
 ## 5. Worker and Scheduling
 
