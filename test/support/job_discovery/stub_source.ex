@@ -4,6 +4,8 @@ defmodule FinLimier.JobDiscovery.StubSource do
   `put_offers/1` (default: empty list) or `put_error/1` to exercise containment.
   """
 
+  use Boundary, deps: [FinLimier.Core, FinLimier.Ports]
+
   @behaviour FinLimier.Ports.JobSource
 
   use Agent

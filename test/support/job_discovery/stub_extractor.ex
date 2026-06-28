@@ -5,6 +5,8 @@ defmodule FinLimier.JobDiscovery.StubExtractor do
   as-is. Pass `payload: %{"_fail" => reason}` to simulate parsing failure.
   """
 
+  use Boundary, deps: [FinLimier.Core, FinLimier.Ports]
+
   @behaviour FinLimier.Ports.JobOfferExtractor
 
   alias FinLimier.Core.JobOffer

@@ -16,7 +16,7 @@ defmodule FinLimier.UseCases.ListDiscoveredJobs do
 
     * `:limit` - maximum number of offers to return (defaults to no limit).
   """
-  @spec run(keyword()) :: [DiscoveredJobOffer.t]
+  @spec run(keyword()) :: [DiscoveredJobOffer.t()]
   def run(opts \\ []) do
     query = from o in DiscoveredJobOffer, order_by: [desc: o.discovered_at, desc: o.id]
 

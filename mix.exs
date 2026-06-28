@@ -10,7 +10,7 @@ defmodule FinLimier.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      compilers: [:phoenix_live_view] ++ Mix.compilers(),
+      compilers: [:boundary, :phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
   end
@@ -67,7 +67,8 @@ defmodule FinLimier.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:oban, "~> 2.23"},
-      {:instructor_lite, "~> 1.2"}
+      {:instructor_lite, "~> 1.2"},
+      {:boundary, "~> 0.10.4"}
     ]
   end
 

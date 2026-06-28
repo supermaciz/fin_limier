@@ -17,6 +17,8 @@ defmodule FinLimierWeb do
   those modules here.
   """
 
+  use Boundary, deps: [FinLimier], exports: [Endpoint, Telemetry]
+
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
   def router do

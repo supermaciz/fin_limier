@@ -14,6 +14,7 @@ defmodule FinLimier.DataCase do
   this option is not recommended for other databases.
   """
 
+  use Boundary, top_level?: true, check: [out: false]
   use ExUnit.CaseTemplate
 
   using do
