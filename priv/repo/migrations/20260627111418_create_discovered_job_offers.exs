@@ -11,8 +11,8 @@ defmodule FinLimier.Repo.Migrations.CreateDiscoveredJobOffers do
       add :company, :string
       add :title, :string
       add :stack, {:array, :string}, null: false, default: []
-      add :remote, :string
-      add :seniority, :string
+      add :remote, :string, null: false, default: "unknown"
+      add :seniority, :string, null: false, default: "unknown"
       add :location, :string
       add :salary, :string
 

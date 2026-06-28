@@ -16,8 +16,8 @@ defmodule FinLimier.Persistence.DiscoveredJobOffer do
           company: String.t() | nil,
           title: String.t() | nil,
           stack: [String.t()],
-          remote: JobOffer.remote_mode() | nil,
-          seniority: JobOffer.seniority() | nil,
+          remote: JobOffer.remote_mode(),
+          seniority: JobOffer.seniority(),
           location: String.t() | nil,
           salary: String.t() | nil,
           discovered_at: DateTime.t() | nil
@@ -32,8 +32,8 @@ defmodule FinLimier.Persistence.DiscoveredJobOffer do
     field :company, :string
     field :title, :string
     field :stack, {:array, :string}, default: []
-    field :remote, Ecto.Enum, values: @remote_modes
-    field :seniority, Ecto.Enum, values: @seniorities
+    field :remote, Ecto.Enum, values: @remote_modes, default: :unknown
+    field :seniority, Ecto.Enum, values: @seniorities, default: :unknown
     field :location, :string
     field :salary, :string
 
