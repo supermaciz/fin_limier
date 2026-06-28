@@ -12,6 +12,7 @@ This change introduces the first useful job-search slice: scheduled job discover
 - Parse raw offers into `FinLimier.Core.JobOffer` through an LLM extraction port.
 - Persist normalized offers with source metadata and deduplicate by source identity.
 - Run discovery through an Oban worker and expose a minimal LiveView review screen.
+- Enforce the main architectural boundaries at compile time with Boundary.
 - Keep code names, modules, and domain vocabulary in English.
 
 **Non-Goals:**
@@ -29,6 +30,33 @@ This change introduces the first useful job-search slice: scheduled job discover
 Use `lib/fin_limier` for core, use cases, ports, driven adapters, workers, and persistence. Use `lib/fin_limier_web` for the LiveView review screen.
 
 Alternative considered: an umbrella or putting web modules under `FinLimier.Adapters.Web`. Rejected because this project has one deployment unit and Phoenix already provides a useful boundary: `FinLimier` must not depend on `FinLimierWeb`.
+
+### Enforce architectural boundaries with Boundary
+
+Add `boundary` as a compile-time dependency and use it as a lightweight
+architecture guard. Boundary should document and enforce the architecture this
+change already wants, not force a more abstract design.
+
+Start with the highest-value rule:
+
+- `FinLimierWeb` may depend on `FinLimier`.
+- `FinLimier` must not depend on `FinLimierWeb`.
+
+Then refine only where the checks remain useful and low-friction:
+
+- `FinLimier.Core` is the stable domain model and should not depend on web,
+  adapters, use cases, or persistence modules.
+- `FinLimier.Ports` may depend on `FinLimier.Core`.
+- `FinLimier.Adapters` may depend on ports, core types, and external libraries.
+- `FinLimier.Persistence` may depend on `FinLimier.Core` and Ecto.
+- `FinLimier.UseCases` may depend on core, ports, persistence, and `Repo`.
+- `FinLimier.Workers` may depend on use cases.
+- `FinLimier.Application` is top-level assembly code and may depend on the
+  components it starts.
+
+Do not use Boundary to introduce a persistence port. The use cases may still
+call `FinLimier.Repo` directly in this change; Boundary should make that
+decision explicit rather than contradict it.
 
 ### Model this as a pipeline, not an autonomous agent
 
@@ -86,10 +114,13 @@ The France Travail adapter uses the existing `Req` dependency for HTTP. Token ac
 - Source payloads may change -> keep raw source handling inside the adapter and persist source metadata for debugging.
 - Duplicate detection may be incomplete if a source changes identifiers -> start with `{source, source_id}` and revisit only when real data shows a problem.
 - Adding Oban introduces database-backed job tables -> use standard Oban migrations and keep the worker idempotent.
+- Boundary can become noisy if boundaries are too granular -> start with the
+  `FinLimier` / `FinLimierWeb` rule and refine only after the first compile
+  checks are clean.
 
 ## Migration Plan
 
-1. Add required dependencies and migrations.
+1. Add required dependencies, Boundary declarations, and migrations.
 2. Add ports, adapters, use cases, persistence schema, and worker.
 3. Add a minimal LiveView route and screen for discovered offers.
 4. Configure test stubs so the pipeline can be tested without external HTTP or LLM calls.
