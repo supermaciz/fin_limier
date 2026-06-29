@@ -5,8 +5,8 @@ defmodule FinLimier.Persistence.DiscoveredJobOffer do
 
   alias FinLimier.Core.JobOffer
 
-  @remote_modes [:full, :hybrid, :onsite, :unknown]
-  @seniorities [:junior, :mid, :senior, :unknown]
+  @remote_modes JobOffer.remote_modes()
+  @seniorities JobOffer.seniorities()
 
   @type t :: %__MODULE__{
           source: String.t() | nil,
