@@ -24,6 +24,8 @@ defmodule FinLimier.Workers.DiscoverJobsWorker do
   defp log_failures(%{failures: []}), do: :ok
 
   defp log_failures(%{failures: failures}) do
-    Logger.warning("Job discovery completed with #{length(failures)} offer failure(s): #{inspect(failures)}")
+    Logger.warning(
+      "Job discovery completed with #{length(failures)} offer failure(s): #{inspect(failures)}"
+    )
   end
 end
