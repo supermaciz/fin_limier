@@ -35,13 +35,13 @@
 
 ## 6. LiveView Review Screen
 
-- [ ] 6.1 Add a LiveView route for discovered job offers.
-- [ ] 6.2 Implement a discovered offers LiveView wrapped in `<Layouts.app flash={@flash} ...>`.
-- [ ] 6.3 Render company, title, remote mode, seniority, location, source, and discovery time.
-- [ ] 6.4 Add an empty state for no discovered offers.
-- [ ] 6.5 Add LiveView tests using stable DOM IDs and `has_element?/2` selectors.
+- [x] 6.1 Add a LiveView route for discovered job offers.
+- [x] 6.2 Implement a discovered offers LiveView wrapped in `<Layouts.app flash={@flash} ...>`.
+- [x] 6.3 Render company, title, remote mode, seniority, location, source, and discovery time.
+- [x] 6.4 Add an empty state for no discovered offers.
+- [x] 6.5 Add LiveView tests using stable DOM IDs and `has_element?/2` selectors.
 
 ## 7. Verification
 
-- [ ] 7.1 Run the focused test suite for discovery, worker, and LiveView behavior.
-- [ ] 7.2 Run `mix precommit` and fix any reported issues.
+- [x] 7.1 Run the focused test suite for discovery, worker, and LiveView behavior.
+- [x] 7.2 Run `mix precommit` and fix any reported issues.
