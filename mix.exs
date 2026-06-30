@@ -10,6 +10,7 @@ defmodule FinLimier.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
       compilers: [:boundary, :phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
@@ -27,7 +28,7 @@ defmodule FinLimier.MixProject do
 
   def cli do
     [
-      preferred_envs: [precommit: :test]
+      preferred_envs: [precommit: :test, "coveralls.json": :test]
     ]
   end
 
@@ -70,7 +71,8 @@ defmodule FinLimier.MixProject do
       {:oban_web, "~> 2.12"},
       {:igniter, "~> 0.5", only: [:dev]},
       {:instructor_lite, "~> 1.2"},
-      {:boundary, "~> 0.10.4", runtime: false}
+      {:boundary, "~> 0.10.4", runtime: false},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 

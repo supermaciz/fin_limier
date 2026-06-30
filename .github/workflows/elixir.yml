@@ -51,5 +51,13 @@ jobs:
           restore-keys: ${{ runner.os }}-mix-
       - name: Install dependencies
         run: mix deps.get
-      - name: Run tests
-        run: mix test
+      - name: Run tests with coverage
+        run: mix coveralls.json
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./cover/excoveralls.json
+          flags: elixir
+          name: elixir-coverage
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}

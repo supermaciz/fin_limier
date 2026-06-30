@@ -1,5 +1,7 @@
 # FinLimier
 
+[![codecov](https://codecov.io/gh/supermaciz/fin_limier/branch/main/graph/badge.svg)](https://codecov.io/gh/supermaciz/fin_limier)
+
 To start your Phoenix server:
 
 * Run `mix setup` to install and setup dependencies
