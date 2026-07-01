@@ -46,9 +46,37 @@ low-level query primitives. A likely shape is:
   `{:error, :duplicate}`, or `{:error, reason}`
 - `list_discovered(opts)` returning stored offers ordered newest-first
 
+Successful insert results and listed offers use
+`FinLimier.Storage.StoredOffer` (see below) as their item shape, not a
+backend-specific struct.
+
 This keeps deduplication inside the store adapter, where atomicity differs by
 backend. Postgres can rely on a unique index and ETS can use a table operation
 keyed by `{source, source_id}`.
+
+### Return a shared `Storage.StoredOffer` struct from the port
+
+Define a neutral `FinLimier.Storage.StoredOffer` struct as the canonical shape
+returned by every adapter, and map each backend's native representation to it at
+the adapter boundary. The struct includes `id` and all review fields
+(`source`, `source_id`, `source_url`, `company`, `title`, `stack`, `remote`,
+`seniority`, `location`, `salary`, `raw_payload`, `discovered_at`).
+
+`id` is required because the LiveView derives its stream `dom_id` from
+`offer.id`; the ETS adapter generates and stores a stable id per inserted offer.
+`remote` and `seniority` stay atoms and `discovered_at` stays a `DateTime`,
+matching what the LiveView template already expects.
+
+Alternative considered: a `StoredOffer` protocol implemented per backend struct.
+Rejected because the backends carry no diverging *behavior* — only the same data
+read as fields — and a protocol would force the LiveView from `offer.company`
+field access to `StoredOffer.company(offer)` calls across ~12 accessors for no
+gain. A protocol would become justified only if backend-specific behavior (not
+just field reads) diverged.
+
+Alternative considered: reuse the Ecto `DiscoveredJobOffer` struct as the shared
+shape. Rejected because it would make the ETS adapter depend on the
+`Storage.Postgres` namespace, defeating the boundary this change establishes.
 
 Alternative considered: keep duplicate checks in `DiscoverJobs` with separate
 `exists?` and `insert` calls. Rejected because each backend needs different
@@ -113,9 +141,9 @@ Postgres.
 
 - ETS is volatile -> document that discovered offers are lost on application
   restart in ETS mode.
-- ETS and Postgres may return different concrete structs -> define a shared
-  stored-offer shape or keep templates limited to fields guaranteed by the
-  `JobOfferStore` contract.
+- ETS and Postgres may return different concrete structs -> resolved by the
+  shared `Storage.StoredOffer` return struct that each adapter maps to at its
+  boundary (see Decisions).
 - Moving `Repo` touches many Phoenix/Ecto conventions -> update config,
   sandbox, release tasks, Oban config, telemetry, and tests in one change.
 - Conditional Oban startup changes scheduler availability -> tests and docs

@@ -1,7 +1,7 @@
 ## 1. Storage Contract
 
 - [ ] 1.1 Add `FinLimier.Ports.JobOfferStore` behaviour with callbacks for inserting a new discovered offer and listing discovered offers.
-- [ ] 1.2 Define the shared stored-offer data shape expected by use cases and LiveView, either as a storage struct or as a documented behaviour return contract.
+- [ ] 1.2 Define a shared `FinLimier.Storage.StoredOffer` struct as the canonical return shape for the port. It MUST include `id` (used by the LiveView `dom_id`) plus `source`, `source_id`, `source_url`, `company`, `title`, `stack`, `remote` (atom), `seniority` (atom), `location`, `salary`, `raw_payload`, and `discovered_at` (`DateTime`). Each adapter maps its native representation to this struct at its boundary, so use cases and LiveView keep `offer.field` access without depending on a concrete backend struct.
 - [ ] 1.3 Update `FinLimier.Ports` Boundary exports to include `JobOfferStore`.
 
 ## 2. Postgres Storage Namespace
@@ -10,7 +10,7 @@
 - [ ] 2.2 Move `FinLimier.Repo` to `FinLimier.Storage.Postgres.Repo`.
 - [ ] 2.3 Move `FinLimier.Persistence.DiscoveredJobOffer` to `FinLimier.Storage.Postgres.DiscoveredJobOffer`.
 - [ ] 2.4 Update Ecto config, `ecto_repos`, Oban config, release helpers, telemetry, seeds, migrations references, and test sandbox setup to use the moved repo.
-- [ ] 2.5 Implement `FinLimier.Storage.Postgres.JobOfferStore` using the moved repo and schema while preserving current ordering, fields, and duplicate handling.
+- [ ] 2.5 Implement `FinLimier.Storage.Postgres.JobOfferStore` using the moved repo and schema while preserving current ordering, fields, and duplicate handling, mapping persisted `DiscoveredJobOffer` records to `Storage.StoredOffer`.
 
 ## 3. Use Case Integration
 
@@ -21,7 +21,7 @@
 
 ## 4. ETS Storage Backend
 
-- [ ] 4.1 Add `FinLimier.Storage.Ets.JobOfferStore` implementing the `JobOfferStore` behaviour.
+- [ ] 4.1 Add `FinLimier.Storage.Ets.JobOfferStore` implementing the `JobOfferStore` behaviour and returning `Storage.StoredOffer` structs, generating and storing a stable `id` for each inserted offer.
 - [ ] 4.2 Add supervised ETS initialization for the configured ETS storage table.
 - [ ] 4.3 Ensure ETS duplicate detection is keyed by `{source, source_id}` and reports duplicates without creating another stored offer.
 - [ ] 4.4 Ensure ETS listing returns discovered offers newest-first and respects the existing `:limit` option.
