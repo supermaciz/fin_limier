@@ -2,7 +2,11 @@
 
 ## Purpose
 
-Provide a pipeline that fetches raw job offers from configured external sources (starting with France Travail), parses them into normalized job offer data, persists and deduplicates them, runs as a schedulable background job, and lets users review discovered offers in a LiveView screen.
+Provide a pipeline that fetches raw job offers from configured external sources
+(starting with France Travail), parses them into normalized job offer data,
+stores and deduplicates them through the configured storage backend, runs as a
+schedulable background job when available, and lets users review discovered
+offers in a LiveView screen.
 
 ## Requirements
 
@@ -37,34 +41,39 @@ The system SHALL parse raw offer text or payloads into normalized `FinLimier.Cor
 - **THEN** the system keeps discovery running for other offers and records the parsing failure for inspection
 
 ### Requirement: Discovered offers are persisted and deduplicated
-The system SHALL persist discovered job offers with source metadata and SHALL avoid creating duplicate records for the same source offer across discovery runs.
+The system SHALL store discovered job offers with source metadata through the
+configured job offer storage backend and SHALL avoid creating duplicate records
+for the same source offer across discovery runs within that backend.
 
 #### Scenario: Persist a new offer
-- **WHEN** a parsed offer has not previously been stored for its source and source identifier
-- **THEN** the system creates a persisted job offer record with normalized fields and source metadata
+- **WHEN** a parsed offer has not previously been stored for its source and source identifier in the configured backend
+- **THEN** the system creates a stored job offer with normalized fields and source metadata through the configured backend
 
 #### Scenario: Skip an existing offer
-- **WHEN** discovery sees an offer with a source and source identifier that already exists
-- **THEN** the system does not create a duplicate persisted record
+- **WHEN** discovery sees an offer with a source and source identifier that already exists in the configured backend
+- **THEN** the system does not create a duplicate stored offer
 
 ### Requirement: Discovery can run as a background job
-The system SHALL expose job discovery as a background worker that can be triggered manually and scheduled periodically.
+The system SHALL expose job discovery as a background worker that can be
+triggered manually and scheduled periodically when the configured runtime
+includes the background job system.
 
 #### Scenario: Scheduled discovery run
-- **WHEN** the scheduled discovery worker runs
-- **THEN** the system fetches, parses, deduplicates, and persists offers without requiring a web request
+- **WHEN** the scheduled discovery worker runs in a runtime with the background job system enabled
+- **THEN** the system fetches, parses, deduplicates, and stores offers without requiring a web request
 
 #### Scenario: Retryable worker failure
-- **WHEN** a discovery worker fails unexpectedly
+- **WHEN** a discovery worker fails unexpectedly in a runtime with the background job system enabled
 - **THEN** the background job system marks the run as failed and makes it eligible for retry according to worker configuration
 
 ### Requirement: Users can review discovered offers
-The system SHALL provide a LiveView screen where users can review persisted discovered offers.
+The system SHALL provide a LiveView screen where users can review discovered
+offers from the configured job offer storage backend.
 
 #### Scenario: List discovered offers
 - **WHEN** a user opens the discovered offers screen
-- **THEN** the system displays persisted offers with company, title, remote mode, seniority, location, source, and discovery time
+- **THEN** the system displays stored offers from the configured backend with company, title, remote mode, seniority, location, source, and discovery time
 
 #### Scenario: Empty discovery list
-- **WHEN** no offers have been persisted yet
+- **WHEN** no offers have been stored in the configured backend yet
 - **THEN** the system displays an empty state instead of failing or rendering an empty table without context
