@@ -2,6 +2,14 @@
 
 [![codecov](https://codecov.io/gh/supermaciz/fin_limier/branch/main/graph/badge.svg)](https://codecov.io/gh/supermaciz/fin_limier)
 
+## Goals
+
+FinLimier is a learning project built with [Phoenix](https://www.phoenixframework.org/) and driven by three main objectives:
+
+- **Build a job search assistant** — an AI-powered tool that helps users find and analyze job offers, starting with data from the [France Travail API](https://francetravail.io/produits-partages/catalogue/offres-emploi?tabgroup-api=documentation).
+- **Explore spec-driven development with [OpenSpec](https://github.com/zinc-collective/openspec)** — use executable specifications to guide design and implementation throughout the project.
+- **Practice clean / hexagonal architecture** — apply architectural patterns (ports & adapters, domain isolation, dependency inversion) to keep the codebase maintainable and testable.
+
 To start your Phoenix server:
 
 * Run `mix setup` to install and setup dependencies
