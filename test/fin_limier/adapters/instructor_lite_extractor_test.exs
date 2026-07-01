@@ -1,6 +1,7 @@
 defmodule FinLimier.Adapters.InstructorLiteExtractorTest do
   use ExUnit.Case, async: false
 
+  alias FinLimier.Adapters.InstructorLite.JobOfferInstruction
   alias FinLimier.Adapters.InstructorLiteExtractor
   alias FinLimier.Core.JobOffer
 
@@ -9,7 +10,7 @@ defmodule FinLimier.Adapters.InstructorLiteExtractorTest do
       send(self(), {:instructor_request, params, opts})
 
       {:ok,
-       %JobOffer{
+       %JobOfferInstruction{
          company: "Acme",
          title: "Elixir Developer",
          stack: ["Elixir"],
@@ -41,8 +42,32 @@ defmodule FinLimier.Adapters.InstructorLiteExtractorTest do
     assert_received {:instructor_request, params, opts}
     assert [%{role: "user", content: content}] = params.input
     assert content =~ "Elixir Developer"
-    assert opts[:response_model] == JobOffer
     assert opts[:adapter] == InstructorLite.Adapters.OpenAI
+  end
+
+  test "uses the adapter-owned instruction schema as response model" do
+    raw_offer = %{source: "france_travail", source_id: "123", payload: %{}}
+
+    assert {:ok, %JobOffer{}} =
+             InstructorLiteExtractor.extract(raw_offer, instructor: SuccessInstructor)
+
+    assert_received {:instructor_request, _params, opts}
+    assert opts[:response_model] == JobOfferInstruction
+  end
+
+  test "maps successful instruction output into every core job offer field" do
+    raw_offer = %{source: "france_travail", source_id: "123", payload: %{}}
+
+    assert {:ok, %JobOffer{} = offer} =
+             InstructorLiteExtractor.extract(raw_offer, instructor: SuccessInstructor)
+
+    assert offer.company == "Acme"
+    assert offer.title == "Elixir Developer"
+    assert offer.stack == ["Elixir"]
+    assert offer.remote == :hybrid
+    assert offer.seniority == :senior
+    assert offer.location == "Paris"
+    assert offer.salary == "60k"
   end
 
   test "uses adapter context from application runtime config" do
@@ -55,6 +80,46 @@ defmodule FinLimier.Adapters.InstructorLiteExtractorTest do
 
     assert_received {:instructor_request, _params, opts}
     assert opts[:adapter_context] == [api_key: "runtime-key"]
+  end
+
+  test "passes explicit max_retries to instructor_lite" do
+    raw_offer = %{source: "france_travail", source_id: "123", payload: %{}}
+
+    assert {:ok, %JobOffer{}} =
+             InstructorLiteExtractor.extract(raw_offer,
+               instructor: SuccessInstructor,
+               max_retries: 3
+             )
+
+    assert_received {:instructor_request, _params, opts}
+    assert opts[:max_retries] == 3
+  end
+
+  test "falls back to runtime config max_retries when not passed explicitly" do
+    put_runtime_config(max_retries: 2)
+
+    raw_offer = %{source: "france_travail", source_id: "123", payload: %{}}
+
+    assert {:ok, %JobOffer{}} =
+             InstructorLiteExtractor.extract(raw_offer, instructor: SuccessInstructor)
+
+    assert_received {:instructor_request, _params, opts}
+    assert opts[:max_retries] == 2
+  end
+
+  test "explicit max_retries takes precedence over runtime config" do
+    put_runtime_config(max_retries: 2)
+
+    raw_offer = %{source: "france_travail", source_id: "123", payload: %{}}
+
+    assert {:ok, %JobOffer{}} =
+             InstructorLiteExtractor.extract(raw_offer,
+               instructor: SuccessInstructor,
+               max_retries: 5
+             )
+
+    assert_received {:instructor_request, _params, opts}
+    assert opts[:max_retries] == 5
   end
 
   test "contains instructor_lite extraction failures" do
