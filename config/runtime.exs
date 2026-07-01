@@ -24,11 +24,16 @@ config :fin_limier, FinLimierWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
 config :fin_limier, FinLimier.JobDiscovery,
+  job_offer_store:
+    (case System.get_env("JOB_OFFER_STORE", "postgres") do
+       "ets" -> FinLimier.Storage.Ets.JobOfferStore
+       _ -> FinLimier.Storage.Postgres.JobOfferStore
+     end),
   france_travail_client_id: System.get_env("FRANCE_TRAVAIL_CLIENT_ID"),
   france_travail_client_secret: System.get_env("FRANCE_TRAVAIL_CLIENT_SECRET"),
   openai_api_key: System.get_env("OPENAI_API_KEY")
 
-if config_env() == :prod do
+if config_env() == :prod and System.get_env("JOB_OFFER_STORE", "postgres") != "ets" do
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
@@ -38,7 +43,7 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
-  config :fin_limier, FinLimier.Repo,
+  config :fin_limier, FinLimier.Storage.Postgres.Repo,
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),

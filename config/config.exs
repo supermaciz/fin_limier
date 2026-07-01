@@ -8,13 +8,13 @@
 import Config
 
 config :fin_limier,
-  ecto_repos: [FinLimier.Repo],
+  ecto_repos: [FinLimier.Storage.Postgres.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configure Oban for background discovery
 config :fin_limier, Oban,
   engine: Oban.Engines.Basic,
-  repo: FinLimier.Repo,
+  repo: FinLimier.Storage.Postgres.Repo,
   queues: [discovery: 5],
   plugins: [
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
@@ -28,6 +28,8 @@ config :fin_limier, Oban,
 config :fin_limier, FinLimier.JobDiscovery,
   source: FinLimier.Adapters.FranceTravail.Source,
   extractor: FinLimier.Adapters.InstructorLiteExtractor,
+  job_offer_store: FinLimier.Storage.Postgres.JobOfferStore,
+  ets_job_offer_table: :fin_limier_job_offers,
   france_travail_query: "Elixir"
 
 # Configure the endpoint

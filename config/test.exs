@@ -5,7 +5,7 @@ import Config
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :fin_limier, FinLimier.Repo,
+config :fin_limier, FinLimier.Storage.Postgres.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
@@ -30,6 +30,8 @@ config :fin_limier, Oban, testing: :manual
 config :fin_limier, FinLimier.JobDiscovery,
   source: FinLimier.JobDiscovery.StubSource,
   extractor: FinLimier.JobDiscovery.StubExtractor,
+  job_offer_store: FinLimier.Storage.Postgres.JobOfferStore,
+  ets_job_offer_table: :fin_limier_test_job_offers,
   france_travail_query: "Elixir"
 
 # Disable swoosh api client as it is only required for production adapters

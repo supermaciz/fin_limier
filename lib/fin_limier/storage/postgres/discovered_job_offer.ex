@@ -1,4 +1,4 @@
-defmodule FinLimier.Persistence.DiscoveredJobOffer do
+defmodule FinLimier.Storage.Postgres.DiscoveredJobOffer do
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -9,6 +9,7 @@ defmodule FinLimier.Persistence.DiscoveredJobOffer do
   @seniorities JobOffer.seniorities()
 
   @type t :: %__MODULE__{
+          id: integer() | nil,
           source: String.t() | nil,
           source_id: String.t() | nil,
           source_url: String.t() | nil,

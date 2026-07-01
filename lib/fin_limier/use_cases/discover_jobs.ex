@@ -9,11 +9,7 @@ defmodule FinLimier.UseCases.DiscoverJobs do
   failures are returned in the summary for inspection.
   """
 
-  import Ecto.Query, only: [from: 2]
-
   alias FinLimier.Core.JobOffer
-  alias FinLimier.Persistence.DiscoveredJobOffer
-  alias FinLimier.Repo
 
   @type failure :: %{
           source: String.t() | nil,
@@ -38,72 +34,45 @@ defmodule FinLimier.UseCases.DiscoverJobs do
       (defaults to the configured source).
     * `:extractor` - module implementing `FinLimier.Ports.JobOfferExtractor`
       (defaults to the configured extractor).
+    * `:job_offer_store` - module implementing `FinLimier.Ports.JobOfferStore`
+      (defaults to the configured store).
     * `:source_opts` - keyword list forwarded to the source `fetch_offers/1`.
   """
   @spec run(keyword()) :: {:ok, summary()} | {:error, term()}
   def run(opts \\ []) do
     source = Keyword.get(opts, :source, config(:source))
     extractor = Keyword.get(opts, :extractor, config(:extractor))
+    job_offer_store = Keyword.get(opts, :job_offer_store, config(:job_offer_store))
     source_opts = Keyword.get(opts, :source_opts, [])
 
     case source.fetch_offers(source_opts) do
-      {:ok, raw_offers} -> {:ok, process(raw_offers, extractor)}
+      {:ok, raw_offers} -> {:ok, process(raw_offers, extractor, job_offer_store)}
       {:error, reason} -> {:error, reason}
     end
   end
 
-  defp process(raw_offers, extractor) do
+  defp process(raw_offers, extractor, job_offer_store) do
     initial = %{fetched: length(raw_offers), inserted: 0, duplicates: 0, failures: []}
 
     Enum.reduce(raw_offers, initial, fn raw, summary ->
       case extractor.extract(raw) do
-        {:ok, %JobOffer{} = offer} -> persist(raw, offer, summary)
+        {:ok, %JobOffer{} = offer} -> persist(raw, offer, job_offer_store, summary)
         {:error, reason} -> add_failure(summary, raw, :extraction, reason)
       end
     end)
   end
 
-  defp persist(raw, %JobOffer{} = offer, summary) do
-    if duplicate?(raw) do
-      %{summary | duplicates: summary.duplicates + 1}
-    else
-      changeset = DiscoveredJobOffer.changeset(%DiscoveredJobOffer{}, build_attrs(raw, offer))
+  defp persist(raw, %JobOffer{} = offer, job_offer_store, summary) do
+    case job_offer_store.insert_new(raw, offer) do
+      {:ok, _stored_offer} ->
+        %{summary | inserted: summary.inserted + 1}
 
-      case Repo.insert(changeset) do
-        {:ok, _record} -> %{summary | inserted: summary.inserted + 1}
-        {:error, %Ecto.Changeset{} = changeset} -> persist_error(summary, raw, changeset)
-      end
+      {:error, :duplicate} ->
+        %{summary | duplicates: summary.duplicates + 1}
+
+      {:error, reason} ->
+        add_failure(summary, raw, :persistence, reason)
     end
-  end
-
-  defp persist_error(summary, raw, changeset) do
-    if duplicate_constraint_error?(changeset) do
-      %{summary | duplicates: summary.duplicates + 1}
-    else
-      add_failure(summary, raw, :persistence, changeset)
-    end
-  end
-
-  defp duplicate?(%{source: source, source_id: source_id}) do
-    Repo.exists?(
-      from o in DiscoveredJobOffer, where: o.source == ^source and o.source_id == ^source_id
-    )
-  end
-
-  defp duplicate_constraint_error?(%Ecto.Changeset{errors: errors}) do
-    Enum.any?(errors, fn {field, _} -> field in [:source, :source_id] end)
-  end
-
-  defp build_attrs(raw, %JobOffer{} = offer) do
-    offer
-    |> Map.take([:company, :title, :stack, :remote, :seniority, :location, :salary])
-    |> Map.merge(%{
-      source: raw.source,
-      source_id: raw.source_id,
-      source_url: Map.get(raw, :source_url),
-      raw_payload: Map.get(raw, :payload, %{}),
-      discovered_at: DateTime.utc_now() |> DateTime.truncate(:second)
-    })
   end
 
   defp add_failure(summary, raw, stage, reason) do

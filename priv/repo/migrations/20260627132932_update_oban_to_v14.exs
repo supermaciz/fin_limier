@@ -1,4 +1,4 @@
-defmodule FinLimier.Repo.Migrations.UpdateObanToV14 do
+defmodule FinLimier.Storage.Postgres.Repo.Migrations.UpdateObanToV14 do
   use Ecto.Migration
 
   def up, do: Oban.Migration.up(version: 14)

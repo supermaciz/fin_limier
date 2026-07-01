@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-config :fin_limier, FinLimier.Repo,
+config :fin_limier, FinLimier.Storage.Postgres.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",

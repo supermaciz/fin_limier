@@ -1,41 +1,41 @@
 ## 1. Storage Contract
 
-- [ ] 1.1 Add `FinLimier.Ports.JobOfferStore` behaviour with callbacks for inserting a new discovered offer and listing discovered offers.
-- [ ] 1.2 Define a shared `FinLimier.Storage.StoredOffer` struct as the canonical return shape for the port. It MUST include `id` (used by the LiveView `dom_id`) plus `source`, `source_id`, `source_url`, `company`, `title`, `stack`, `remote` (atom), `seniority` (atom), `location`, `salary`, `raw_payload`, and `discovered_at` (`DateTime`). Each adapter maps its native representation to this struct at its boundary, so use cases and LiveView keep `offer.field` access without depending on a concrete backend struct.
-- [ ] 1.3 Update `FinLimier.Ports` Boundary exports to include `JobOfferStore`.
+- [x] 1.1 Add `FinLimier.Ports.JobOfferStore` behaviour with callbacks for inserting a new discovered offer and listing discovered offers.
+- [x] 1.2 Define a shared `FinLimier.Storage.StoredOffer` struct as the canonical return shape for the port. It MUST include `id` (used by the LiveView `dom_id`) plus `source`, `source_id`, `source_url`, `company`, `title`, `stack`, `remote` (atom), `seniority` (atom), `location`, `salary`, `raw_payload`, and `discovered_at` (`DateTime`). Each adapter maps its native representation to this struct at its boundary, so use cases and LiveView keep `offer.field` access without depending on a concrete backend struct.
+- [x] 1.3 Update `FinLimier.Ports` Boundary exports to include `JobOfferStore`.
 
 ## 2. Postgres Storage Namespace
 
-- [ ] 2.1 Rename `FinLimier.Persistence` to `FinLimier.Storage` and update Boundary declarations.
-- [ ] 2.2 Move `FinLimier.Repo` to `FinLimier.Storage.Postgres.Repo`.
-- [ ] 2.3 Move `FinLimier.Persistence.DiscoveredJobOffer` to `FinLimier.Storage.Postgres.DiscoveredJobOffer`.
-- [ ] 2.4 Update Ecto config, `ecto_repos`, Oban config, release helpers, telemetry, seeds, migrations references, and test sandbox setup to use the moved repo.
-- [ ] 2.5 Implement `FinLimier.Storage.Postgres.JobOfferStore` using the moved repo and schema while preserving current ordering, fields, and duplicate handling, mapping persisted `DiscoveredJobOffer` records to `Storage.StoredOffer`.
+- [x] 2.1 Rename `FinLimier.Persistence` to `FinLimier.Storage` and update Boundary declarations.
+- [x] 2.2 Move `FinLimier.Repo` to `FinLimier.Storage.Postgres.Repo`.
+- [x] 2.3 Move `FinLimier.Persistence.DiscoveredJobOffer` to `FinLimier.Storage.Postgres.DiscoveredJobOffer`.
+- [x] 2.4 Update Ecto config, `ecto_repos`, Oban config, release helpers, telemetry, seeds, migrations references, and test sandbox setup to use the moved repo.
+- [x] 2.5 Implement `FinLimier.Storage.Postgres.JobOfferStore` using the moved repo and schema while preserving current ordering, fields, and duplicate handling, mapping persisted `DiscoveredJobOffer` records to `Storage.StoredOffer`.
 
 ## 3. Use Case Integration
 
-- [ ] 3.1 Update `DiscoverJobs` to use the configured `JobOfferStore` instead of importing Ecto queries or calling the repo directly.
-- [ ] 3.2 Update `ListDiscoveredJobs` to use the configured `JobOfferStore` instead of querying the repo directly.
-- [ ] 3.3 Add `:job_offer_store` option overrides to use cases for tests and focused runs, following the existing `:source` and `:extractor` pattern.
-- [ ] 3.4 Update worker and LiveView tests affected by the storage contract.
+- [x] 3.1 Update `DiscoverJobs` to use the configured `JobOfferStore` instead of importing Ecto queries or calling the repo directly.
+- [x] 3.2 Update `ListDiscoveredJobs` to use the configured `JobOfferStore` instead of querying the repo directly.
+- [x] 3.3 Add `:job_offer_store` option overrides to use cases for tests and focused runs, following the existing `:source` and `:extractor` pattern.
+- [x] 3.4 Update worker and LiveView tests affected by the storage contract.
 
 ## 4. ETS Storage Backend
 
-- [ ] 4.1 Add `FinLimier.Storage.Ets.JobOfferStore` implementing the `JobOfferStore` behaviour and returning `Storage.StoredOffer` structs, generating and storing a stable `id` for each inserted offer.
-- [ ] 4.2 Add supervised ETS initialization for the configured ETS storage table.
-- [ ] 4.3 Ensure ETS duplicate detection is keyed by `{source, source_id}` and reports duplicates without creating another stored offer.
-- [ ] 4.4 Ensure ETS listing returns discovered offers newest-first and respects the existing `:limit` option.
-- [ ] 4.5 Add tests covering ETS insert, duplicate handling, field preservation, list ordering, and limit behavior.
+- [x] 4.1 Add `FinLimier.Storage.Ets.JobOfferStore` implementing the `JobOfferStore` behaviour and returning `Storage.StoredOffer` structs, generating and storing a stable `id` for each inserted offer.
+- [x] 4.2 Add supervised ETS initialization for the configured ETS storage table.
+- [x] 4.3 Ensure ETS duplicate detection is keyed by `{source, source_id}` and reports duplicates without creating another stored offer.
+- [x] 4.4 Ensure ETS listing returns discovered offers newest-first and respects the existing `:limit` option.
+- [x] 4.5 Add tests covering ETS insert, duplicate handling, field preservation, list ordering, and limit behavior.
 
 ## 5. Runtime Configuration
 
-- [ ] 5.1 Configure Postgres storage as the default backend in existing dev/test/prod settings.
-- [ ] 5.2 Add configuration for selecting ETS storage without requiring a Postgres database connection.
-- [ ] 5.3 Make application startup conditionally start `FinLimier.Storage.Postgres.Repo` and Oban only when Postgres-backed infrastructure is enabled.
-- [ ] 5.4 Add tests or focused checks proving ETS-configured startup does not require the Postgres repo for discovered job storage.
+- [x] 5.1 Configure Postgres storage as the default backend in existing dev/test/prod settings.
+- [x] 5.2 Add configuration for selecting ETS storage without requiring a Postgres database connection.
+- [x] 5.3 Make application startup conditionally start `FinLimier.Storage.Postgres.Repo` and Oban only when Postgres-backed infrastructure is enabled.
+- [x] 5.4 Add tests or focused checks proving ETS-configured startup does not require the Postgres repo for discovered job storage.
 
 ## 6. Documentation and Validation
 
-- [ ] 6.1 Replace or supersede `docs/architecture/repo-access-in-use-cases.md` with the configurable storage decision.
-- [ ] 6.2 Update architecture docs to explain `Storage` vs `Persistence`, Postgres repo placement, ETS volatility, and Oban's Postgres-mode limitation.
-- [ ] 6.3 Run `mix precommit` and fix any compile, formatting, Boundary, or test issues.
+- [x] 6.1 Replace or supersede `docs/architecture/repo-access-in-use-cases.md` with the configurable storage decision.
+- [x] 6.2 Update architecture docs to explain `Storage` vs `Persistence`, Postgres repo placement, ETS volatility, and Oban's Postgres-mode limitation.
+- [x] 6.3 Run `mix precommit` and fix any compile, formatting, Boundary, or test issues.

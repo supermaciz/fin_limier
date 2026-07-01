@@ -1,9 +1,9 @@
 defmodule FinLimier.UseCases.DiscoverJobsTest do
   use FinLimier.DataCase, async: false
 
-  alias FinLimier.Persistence.DiscoveredJobOffer
   alias FinLimier.JobDiscovery.StubSource
   alias FinLimier.UseCases.DiscoverJobs
+  alias FinLimier.UseCases.ListDiscoveredJobs
 
   setup do
     start_supervised!(StubSource)
@@ -33,7 +33,7 @@ defmodule FinLimier.UseCases.DiscoverJobsTest do
     assert summary.duplicates == 0
     assert summary.failures == []
 
-    assert [offer] = Repo.all(DiscoveredJobOffer)
+    assert [offer] = ListDiscoveredJobs.run()
     assert offer.source == "stub"
     assert offer.source_id == "1"
     assert offer.source_url == "https://example.test/1"
@@ -51,7 +51,7 @@ defmodule FinLimier.UseCases.DiscoverJobsTest do
 
     assert summary.inserted == 0
     assert summary.duplicates == 1
-    assert Repo.aggregate(DiscoveredJobOffer, :count) == 1
+    assert [_offer] = ListDiscoveredJobs.run()
   end
 
   test "contains parsing failures and keeps discovering other offers" do
@@ -68,7 +68,7 @@ defmodule FinLimier.UseCases.DiscoverJobsTest do
     assert failure.stage == :extraction
     assert failure.reason == :unparseable
 
-    assert [offer] = Repo.all(DiscoveredJobOffer)
+    assert [offer] = ListDiscoveredJobs.run()
     assert offer.source_id == "ok"
   end
 
@@ -76,6 +76,6 @@ defmodule FinLimier.UseCases.DiscoverJobsTest do
     StubSource.put_error(:boom)
 
     assert {:error, :boom} = DiscoverJobs.run()
-    assert Repo.aggregate(DiscoveredJobOffer, :count) == 0
+    assert ListDiscoveredJobs.run() == []
   end
 end

@@ -53,23 +53,23 @@ defmodule FinLimierWeb.Telemetry do
       ),
 
       # Database Metrics
-      summary("fin_limier.repo.query.total_time",
+      summary("fin_limier.storage.postgres.repo.query.total_time",
         unit: {:native, :millisecond},
         description: "The sum of the other measurements"
       ),
-      summary("fin_limier.repo.query.decode_time",
+      summary("fin_limier.storage.postgres.repo.query.decode_time",
         unit: {:native, :millisecond},
         description: "The time spent decoding the data received from the database"
       ),
-      summary("fin_limier.repo.query.query_time",
+      summary("fin_limier.storage.postgres.repo.query.query_time",
         unit: {:native, :millisecond},
         description: "The time spent executing the query"
       ),
-      summary("fin_limier.repo.query.queue_time",
+      summary("fin_limier.storage.postgres.repo.query.queue_time",
         unit: {:native, :millisecond},
         description: "The time spent waiting for a database connection"
       ),
-      summary("fin_limier.repo.query.idle_time",
+      summary("fin_limier.storage.postgres.repo.query.idle_time",
         unit: {:native, :millisecond},
         description:
           "The time the connection spent waiting before being checked out for the query"

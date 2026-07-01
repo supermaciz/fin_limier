@@ -5,5 +5,7 @@ defmodule FinLimier.Ports do
   Ports may depend on the core domain model only.
   """
 
-  use Boundary, deps: [FinLimier.Core], exports: [JobSource, JobOfferExtractor]
+  use Boundary,
+    deps: [FinLimier.Core],
+    exports: [JobSource, JobOfferExtractor, JobOfferStore]
 end

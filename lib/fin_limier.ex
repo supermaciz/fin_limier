@@ -7,5 +7,5 @@ defmodule FinLimier do
   if it comes from the database, an external API or others.
   """
 
-  use Boundary, deps: [], exports: [Repo, UseCases.DiscoverJobs, UseCases.ListDiscoveredJobs]
+  use Boundary, deps: [], exports: [UseCases.DiscoverJobs, UseCases.ListDiscoveredJobs]
 end

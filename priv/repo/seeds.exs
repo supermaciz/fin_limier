@@ -5,7 +5,7 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     FinLimier.Repo.insert!(%FinLimier.SomeSchema{})
+#     FinLimier.Storage.Postgres.Repo.insert!(%FinLimier.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.

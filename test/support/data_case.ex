@@ -19,7 +19,7 @@ defmodule FinLimier.DataCase do
 
   using do
     quote do
-      alias FinLimier.Repo
+      alias FinLimier.Storage.Postgres.Repo
 
       import Ecto
       import Ecto.Changeset
@@ -37,7 +37,11 @@ defmodule FinLimier.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(FinLimier.Repo, shared: not tags[:async])
+    pid =
+      Ecto.Adapters.SQL.Sandbox.start_owner!(FinLimier.Storage.Postgres.Repo,
+        shared: not tags[:async]
+      )
+
     on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
   end
 

@@ -1,4 +1,4 @@
-defmodule FinLimier.Repo.Migrations.AddObanJobsTable do
+defmodule FinLimier.Storage.Postgres.Repo.Migrations.AddObanJobsTable do
   use Ecto.Migration
 
   def up, do: Oban.Migration.up(version: 12)

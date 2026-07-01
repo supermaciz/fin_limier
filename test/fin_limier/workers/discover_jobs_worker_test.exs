@@ -4,7 +4,7 @@ defmodule FinLimier.Workers.DiscoverJobsWorkerTest do
   import Oban.Testing, only: [perform_job: 3]
 
   alias FinLimier.JobDiscovery.StubSource
-  alias FinLimier.Persistence.DiscoveredJobOffer
+  alias FinLimier.UseCases.ListDiscoveredJobs
   alias FinLimier.Workers.DiscoverJobsWorker
 
   setup do
@@ -24,14 +24,14 @@ defmodule FinLimier.Workers.DiscoverJobsWorkerTest do
     ])
 
     assert :ok = perform_job(DiscoverJobsWorker, %{}, [])
-    assert [%DiscoveredJobOffer{source_id: "worker-1"}] = Repo.all(DiscoveredJobOffer)
+    assert [%{source_id: "worker-1"}] = ListDiscoveredJobs.run()
   end
 
   test "returns an error for retryable discovery failures" do
     StubSource.put_error(:temporary_failure)
 
     assert {:error, :temporary_failure} = perform_job(DiscoverJobsWorker, %{}, [])
-    assert Repo.aggregate(DiscoveredJobOffer, :count) == 0
+    assert ListDiscoveredJobs.run() == []
   end
 
   test "is configured for scheduled discovery" do

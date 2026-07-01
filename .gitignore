@@ -45,3 +45,6 @@ npm-debug.log
 # env, direnv
 .env
 .envrc
+
+# IDEs
+.idea/

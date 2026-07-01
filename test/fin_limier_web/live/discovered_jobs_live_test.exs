@@ -3,8 +3,8 @@ defmodule FinLimierWeb.DiscoveredJobsLiveTest do
 
   import Phoenix.LiveViewTest
 
-  alias FinLimier.Persistence.DiscoveredJobOffer
-  alias FinLimier.Repo
+  alias FinLimier.Core.JobOffer
+  alias FinLimier.Storage.Postgres.JobOfferStore
 
   defp insert_offer(attrs) do
     defaults = %{
@@ -20,9 +20,26 @@ defmodule FinLimierWeb.DiscoveredJobsLiveTest do
       discovered_at: ~U[2026-06-20 10:30:00Z]
     }
 
-    %DiscoveredJobOffer{}
-    |> DiscoveredJobOffer.changeset(Map.merge(defaults, attrs))
-    |> Repo.insert!()
+    attrs = Map.merge(defaults, attrs)
+
+    {:ok, offer} =
+      JobOfferStore.insert_new(
+        %{
+          source: attrs.source,
+          source_id: attrs.source_id,
+          source_url: attrs.source_url,
+          payload: attrs.raw_payload
+        },
+        %JobOffer{
+          company: attrs.company,
+          title: attrs.title,
+          remote: attrs.remote,
+          seniority: attrs.seniority,
+          location: attrs.location
+        }
+      )
+
+    offer
   end
 
   test "renders persisted discovered offers", %{conn: conn} do

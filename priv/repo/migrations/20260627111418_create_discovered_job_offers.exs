@@ -1,4 +1,4 @@
-defmodule FinLimier.Repo.Migrations.CreateDiscoveredJobOffers do
+defmodule FinLimier.Storage.Postgres.Repo.Migrations.CreateDiscoveredJobOffers do
   use Ecto.Migration
 
   def change do
